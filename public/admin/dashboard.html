@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Movie Ticket Booking</title>
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="movies.html" class="nav-link">Manage Movies</a></li>
+            <li><a href="bookings.html" class="nav-link">Bookings</a></li>
+            <li><a href="#" class="nav-link" id="logoutBtn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <h3>Total Movies</h3>
+                <p id="totalMovies">Loading...</p>
+            </div>
+            <div class="dashboard-card">
+                <h3>Total Bookings</h3>
+                <p id="totalBookings">Loading...</p>
+            </div>
+            <div class="dashboard-card">
+                <h3>Total Revenue</h3>
+                <p id="totalRevenue">Loading...</p>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Recent Bookings</h3>
+            <div id="recentBookings">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin/dashboard.js"></script>
+</body>
+</html> 

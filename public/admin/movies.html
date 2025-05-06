@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Movies - Movie Ticket Booking</title>
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="movies.html" class="nav-link">Manage Movies</a></li>
+            <li><a href="bookings.html" class="nav-link">Bookings</a></li>
+            <li><a href="#" class="nav-link" id="logoutBtn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-card">
+            <h2>Add New Movie</h2>
+            <form id="addMovieForm">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" id="genre" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration (minutes)</label>
+                    <input type="number" id="duration" required>
+                </div>
+                <div class="form-group">
+                    <label for="releaseDate">Release Date</label>
+                    <input type="date" id="releaseDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="poster">Poster URL</label>
+                    <input type="url" id="poster" required>
+                </div>
+                <div class="form-group">
+                    <label>Theaters</label>
+                    <div id="theaters">
+                        <div class="theater">
+                            <input type="text" placeholder="Theater Name" class="theater-name" required>
+                            <input type="text" placeholder="Location" class="theater-location" required>
+                            <div class="show-times">
+                                <input type="time" class="show-time" required>
+                            </div>
+                            <button type="button" class="btn add-show-time">Add Show Time</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn" id="addTheater">Add Theater</button>
+                </div>
+                <button type="submit" class="btn">Add Movie</button>
+            </form>
+        </div>
+
+        <div class="dashboard-card">
+            <h2>Manage Movies</h2>
+            <div id="moviesList">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin/movies.js"></script>
+</body>
+</html> 

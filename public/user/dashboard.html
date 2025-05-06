@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Movie Ticket Booking</title>
+    <link rel="stylesheet" href="../css/user.css">
+</head>
+<body>
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a href="dashboard.html" class="nav-link">Movies</a></li>
+            <li><a href="bookings.html" class="nav-link">My Bookings</a></li>
+            <li><a href="#" class="nav-link" id="logoutBtn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="filters">
+            <div class="form-group">
+                <input type="text" id="searchInput" placeholder="Search movies...">
+            </div>
+            <div class="form-group">
+                <select id="genreFilter">
+                    <option value="">All Genres</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="movie-list" id="movieList">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Book Tickets</h2>
+            <div id="movieDetails"></div>
+            <div class="form-group">
+                <label for="theaterSelect">Select Theater</label>
+                <select id="theaterSelect"></select>
+            </div>
+            <div class="form-group">
+                <label for="showTimeSelect">Select Show Time</label>
+                <select id="showTimeSelect"></select>
+            </div>
+            <div class="seat-layout" id="seatLayout"></div>
+            <div class="booking-summary">
+                <h3>Selected Seats: <span id="selectedSeats">0</span></h3>
+                <h3>Total Amount: $<span id="totalAmount">0</span></h3>
+            </div>
+            <button class="btn" id="confirmBooking">Confirm Booking</button>
+        </div>
+    </div>
+
+    <script src="../js/user/dashboard.js"></script>
+</body>
+</html> 
