@@ -46,7 +46,7 @@ npm install
 
 3. Create a `.env` file in the root directory and add your MongoDB Atlas URI:
 ```
-MONGODB_URI=your_mongodb_atlas_uri
+MONGO_URI=your_mongodb_atlas_uri
 JWT_SECRET=your_jwt_secret
 ```
 
