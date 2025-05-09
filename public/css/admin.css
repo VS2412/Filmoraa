@@ -1,6 +1,17 @@
 /* Import base styles */
 @import 'base.css';
 
+body {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
 .dashboard {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

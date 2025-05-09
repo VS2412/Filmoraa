@@ -45,6 +45,12 @@ async function loadMovies() {
 }
 
 function displayMovies(movies) {
+    if (!movies || !Array.isArray(movies)) {
+        console.error('Invalid movies data:', movies);
+        document.getElementById('movieList').innerHTML = '<p>Error loading movies</p>';
+        return;
+    }
+
     const moviesHtml = movies.map(movie => `
         <div class="movie-card">
             <img src="${movie.poster}" alt="${movie.title}" class="movie-poster">
@@ -63,17 +69,28 @@ function displayMovies(movies) {
 }
 
 function updateFilters(movies) {
-    const genres = [...new Set(movies.map(movie => movie.genre))];
-    const locations = [...new Set(movies.flatMap(movie => movie.theaters.map(t => t.location)))];
+    if (!movies || !Array.isArray(movies)) {
+        console.error('Invalid movies data:', movies);
+        return;
+    }
+
+    const genres = [...new Set(movies.map(movie => movie.genre).filter(Boolean))];
+    const locations = [...new Set(movies.flatMap(movie => 
+        movie.theaters ? movie.theaters.map(t => t.location).filter(Boolean) : []
+    ))];
 
     const genreFilter = document.getElementById('genreFilter');
     const locationFilter = document.getElementById('locationFilter');
 
-    genreFilter.innerHTML = '<option value="">All Genres</option>' +
-        genres.map(genre => `<option value="${genre}">${genre}</option>`).join('');
+    if (genreFilter) {
+        genreFilter.innerHTML = '<option value="">All Genres</option>' +
+            genres.map(genre => `<option value="${genre}">${genre}</option>`).join('');
+    }
 
-    locationFilter.innerHTML = '<option value="">All Locations</option>' +
-        locations.map(location => `<option value="${location}">${location}</option>`).join('');
+    if (locationFilter) {
+        locationFilter.innerHTML = '<option value="">All Locations</option>' +
+            locations.map(location => `<option value="${location}">${location}</option>`).join('');
+    }
 }
 
 function setupFilters() {
@@ -81,29 +98,68 @@ function setupFilters() {
     const genreFilter = document.getElementById('genreFilter');
     const locationFilter = document.getElementById('locationFilter');
 
-    const applyFilters = async () => {
-        const search = searchInput.value;
-        const genre = genreFilter.value;
-        const location = locationFilter.value;
+    // Add debouncing for search input
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 300);
+    });
 
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`/api/movies?search=${search}&genre=${genre}&location=${location}`, {
+    genreFilter.addEventListener('change', applyFilters);
+    locationFilter.addEventListener('change', applyFilters);
+}
+
+async function applyFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    const locationFilter = document.getElementById('locationFilter');
+
+    const search = searchInput.value.trim();
+    const genre = genreFilter.value;
+    const location = locationFilter.value;
+
+    try {
+        const token = localStorage.getItem('token');
+        let url;
+        let response;
+
+        if (search) {
+            // Use the search endpoint for text search
+            url = `/api/movies/search?q=${encodeURIComponent(search)}`;
+            response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
-            const movies = await response.json();
-            displayMovies(movies);
-        } catch (error) {
-            console.error('Error applying filters:', error);
+        } else {
+            // Use the main endpoint for genre and location filters
+            url = '/api/movies';
+            const params = [];
+            if (genre) params.push(`genre=${encodeURIComponent(genre)}`);
+            if (location) params.push(`location=${encodeURIComponent(location)}`);
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
         }
-    };
 
-    searchInput.addEventListener('input', applyFilters);
-    genreFilter.addEventListener('change', applyFilters);
-    locationFilter.addEventListener('change', applyFilters);
+        console.log('Request URL:', url); // Debug log
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch movies');
+        }
+
+        const movies = await response.json();
+        console.log('Received movies:', movies.length); // Debug log
+        displayMovies(movies);
+    } catch (error) {
+        console.error('Error applying filters:', error);
+        document.getElementById('movieList').innerHTML = '<p>Error loading movies</p>';
+    }
 }
 
 async function openBookingModal(movieId) {
@@ -141,7 +197,9 @@ async function openBookingModal(movieId) {
         alert('Error loading movie details');
     }
 }
-
+window.addEventListener("load", function() {
+    document.getElementById("target-section").scrollIntoView({ behavior: "smooth" });
+  });
 function updateShowTimes() {
     const theaterSelect = document.getElementById('theaterSelect');
     const showTimeSelect = document.getElementById('showTimeSelect');

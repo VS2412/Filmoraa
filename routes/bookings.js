@@ -108,31 +108,69 @@ router.get('/admin', adminAuth, async (req, res) => {
 
 // Update booking status (admin only)
 router.patch('/:id/status', adminAuth, [
-    body('status').isIn(['pending', 'confirmed', 'cancelled']).withMessage('Invalid status')
+    body('status')
+        .notEmpty().withMessage('Status is required')
+        .isIn(['pending', 'confirmed', 'cancelled']).withMessage('Status must be one of: pending, confirmed, cancelled')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        const booking = await Booking.findById(req.params.id)
-            .populate({
-                path: 'movie',
-                match: { admin: req.user.userId }
+            console.error('Validation errors:', errors.array());
+            return res.status(400).json({ 
+                message: 'Validation failed',
+                errors: errors.array().map(err => ({
+                    field: err.param,
+                    message: err.msg
+                }))
             });
-
-        if (!booking || !booking.movie) {
-            return res.status(404).json({ message: 'Booking not found or unauthorized' });
         }
 
+        const booking = await Booking.findById(req.params.id);
+        if (!booking) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        // Verify admin owns the movie
+        const movie = await Movie.findOne({ 
+            _id: booking.movie,
+            admin: req.user.userId 
+        });
+
+        if (!movie) {
+            return res.status(403).json({ message: 'Unauthorized to update this booking' });
+        }
+
+        // Update the status
         booking.status = req.body.status;
         await booking.save();
 
-        res.json(booking);
+        // Get the updated booking with populated fields
+        const updatedBooking = await Booking.findById(booking._id)
+            .populate({
+                path: 'movie',
+                select: 'title description genre duration releaseDate poster theaters',
+                options: { lean: true }  // Use lean to avoid validation
+            })
+            .populate('user', 'name email')
+            .lean();  // Use lean to avoid validation
+
+        if (!updatedBooking) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        res.json(updatedBooking);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error updating booking status:', error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ 
+                message: 'Validation error',
+                errors: Object.values(error.errors).map(err => ({
+                    field: err.path,
+                    message: err.message
+                }))
+            });
+        }
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 

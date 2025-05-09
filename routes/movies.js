@@ -10,14 +10,7 @@ router.get('/', async (req, res) => {
         const { genre, location, search } = req.query;
         let query = {};
 
-        if (genre) {
-            query.genre = genre;
-        }
-
-        if (location) {
-            query['theaters.location'] = location;
-        }
-
+        // Handle search
         if (search) {
             query.$or = [
                 { title: { $regex: search, $options: 'i' } },
@@ -25,10 +18,46 @@ router.get('/', async (req, res) => {
             ];
         }
 
+        // Handle genre filter
+        if (genre) {
+            query.genre = { $regex: genre, $options: 'i' };
+        }
+
+        // Handle location filter
+        if (location) {
+            query['theaters.location'] = { $regex: location, $options: 'i' };
+        }
+
+        console.log('Main route query:', query); // Debug log
         const movies = await Movie.find(query);
         res.json(movies);
     } catch (error) {
-        console.error(error);
+        console.error('Error in GET /movies:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Search movies (for both index and dashboard)
+router.get('/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+        console.log('Search query:', q); // Debug log
+
+        if (!q) {
+            return res.status(400).json({ message: 'Search query is required' });
+        }
+
+        const movies = await Movie.find({
+            $or: [
+                { title: { $regex: q, $options: 'i' } },
+                { description: { $regex: q, $options: 'i' } }
+            ]
+        });
+
+        console.log('Search results:', movies.length); // Debug log
+        res.json(movies);
+    } catch (error) {
+        console.error('Error in search:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -38,6 +67,22 @@ router.get('/admin', adminAuth, async (req, res) => {
     try {
         const movies = await Movie.find({ admin: req.user.userId });
         res.json(movies);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Get movie by ID (must be after other GET routes)
+router.get('/:id', async (req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id);
+        
+        if (!movie) {
+            return res.status(404).json({ message: 'Movie not found' });
+        }
+        
+        res.json(movie);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -103,22 +148,6 @@ router.delete('/:id', adminAuth, async (req, res) => {
         }
         
         res.json({ message: 'Movie deleted successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// Get movie by ID
-router.get('/:id', async (req, res) => {
-    try {
-        const movie = await Movie.findById(req.params.id);
-        
-        if (!movie) {
-            return res.status(404).json({ message: 'Movie not found' });
-        }
-        
-        res.json(movie);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

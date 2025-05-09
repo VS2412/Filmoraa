@@ -12,14 +12,10 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <h1>MovieTicket</h1>
+                <h1>CineVerse</h1>
             </div>
             <div class="nav-links">
                 <a href="#" class="active">Movies</a>
-                <a href="#">Events</a>
-                <a href="#">Plays</a>
-                <a href="#">Sports</a>
-                <a href="#">Activities</a>
             </div>
             <div class="auth-buttons">
                 <button id="loginBtn" class="btn btn-outline">Login</button>
@@ -28,30 +24,39 @@
         </nav>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero Section with Auto-scrolling Banner -->
     <section class="hero">
-        <div class="hero-content">
-            <h1>Book Your Movie Tickets</h1>
-            <p>Watch the latest movies in theaters near you</p>
+        <div class="banner-slider">
+            <div class="banner-slide active">
+                <img src="https://styles.redditmedia.com/t5_2z61j/styles/bannerBackgroundImage_rj6ssjqj8mu41.jpg?format=pjpg&s=c8ca7aabfa86723a9fffdd7b3b021c061f0c5f7a" alt="Banner 1">
+            </div>
+            <div class="banner-slide">
+                <img src="https://i2.wp.com/urbanasian.com/wp-content/uploads/2018/12/Top-2018-movies.jpg?fit=3264%2C2020&ssl=1" alt="Banner 2">
+            </div>
+            <div class="banner-slide">
+                <img src="https://wallpaperaccess.com/full/1494461.jpg" alt="Banner 3">
+            </div>
+        </div>
+        <div class="banner-controls">
+            <button class="banner-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="banner-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
             <div class="search-box">
-                <input type="text" placeholder="Search for movies, events, plays, sports and activities">
-                <button class="search-btn"><i class="fas fa-search"></i></button>
+                <input type="text" id="movieSearch" placeholder="Search for movies.....">
+                <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
             </div>
         </div>
     </section>
 
-    <!-- Recommended Movies -->
-    <section class="recommended-movies">
-        <h2>Recommended Movies</h2>
-        <div class="movie-slider" id="recommendedMovies">
-            <!-- Movies will be loaded dynamically -->
-        </div>
-    </section>
-
-    <!-- Upcoming Movies -->
-    <section class="upcoming-movies">
-        <h2>Upcoming Movies</h2>
-        <div class="movie-slider" id="upcomingMovies">
+    <!-- All Movies Section -->
+    <section class="all-movies">
+        <h2>All Movies</h2>
+        <div class="movie-grid" id="allMovies">
             <!-- Movies will be loaded dynamically -->
         </div>
     </section>
@@ -61,7 +66,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About Us</h3>
-                <p>MovieTicket is your one-stop destination for booking movie tickets, events, plays, and more.</p>
+                <p>CineVerse is your one-stop destination for booking movie tickets, events, plays, and more.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>

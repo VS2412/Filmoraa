@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('user');
         window.location.href = '/index.html';
     });
+
+    // Add event listener for status select changes
+    document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('status-select')) {
+            e.target.setAttribute('data-original-value', e.target.getAttribute('data-original-value') || e.target.value);
+        }
+    });
 });
 
 async function loadBookings() {
@@ -70,7 +77,12 @@ function displayBookings(bookings) {
         </div>
     `).join('');
 
-    document.getElementById('bookingsList').innerHTML = bookingsHtml;
+    const bookingsList = document.getElementById('bookingsList');
+    bookingsList.innerHTML = `
+        <div class="bookings-container">
+            ${bookingsHtml}
+        </div>
+    `;
 }
 
 async function updateBookingStatus(selectElement) {
@@ -88,17 +100,26 @@ async function updateBookingStatus(selectElement) {
             body: JSON.stringify({ status: newStatus })
         });
 
+        const data = await response.json();
+
         if (response.ok) {
             alert('Booking status updated successfully');
             loadBookings(); // Refresh the bookings list
         } else {
-            const data = await response.json();
-            alert(data.message || 'Error updating booking status');
-            loadBookings(); // Refresh to revert the select value
+            // Handle validation errors
+            if (data.errors && Array.isArray(data.errors)) {
+                const errorMessage = data.errors.map(err => `${err.field}: ${err.message}`).join('\n');
+                alert(`Validation Error:\n${errorMessage}`);
+            } else {
+                alert(data.message || 'Error updating booking status');
+            }
+            // Revert the select value
+            selectElement.value = selectElement.getAttribute('data-original-value') || 'pending';
         }
     } catch (error) {
         console.error('Error updating booking status:', error);
         alert('Error updating booking status');
-        loadBookings(); // Refresh to revert the select value
+        // Revert the select value
+        selectElement.value = selectElement.getAttribute('data-original-value') || 'pending';
     }
 } 
